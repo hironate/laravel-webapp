@@ -1,0 +1,6 @@
+# Nixpacks reads ext-* from composer.json (pdo_pgsql / pgsql).
+# Peon was overriding start to `php artisan migrate` only, which exits
+# after migrate. Keep the web server as the long-running process.
+
+[start]
+cmd = 'php artisan migrate --force && node /assets/scripts/prestart.mjs /assets/nginx.template.conf /nginx.conf && (php-fpm -y /assets/php-fpm.conf & nginx -c /nginx.conf)'

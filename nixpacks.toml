@@ -1,6 +1,6 @@
 # Nixpacks reads ext-* from composer.json (pdo_pgsql / pgsql).
-# Peon was overriding start to `php artisan migrate` only, which exits
-# after migrate. Keep the web server as the long-running process.
+# Write /app/.env from live container env, then start php-fpm with a pool
+# that passes DB_URL through. Image-build ARG/ENV was pinning the old host.
 
 [start]
-cmd = 'php artisan migrate --force && node /assets/scripts/prestart.mjs /assets/nginx.template.conf /nginx.conf && (php artisan schedule:work & php-fpm -y /assets/php-fpm.conf & nginx -c /nginx.conf)'
+cmd = 'php /app/scripts/write-runtime-env.php && php artisan config:clear --ansi && php artisan migrate --force && node /assets/scripts/prestart.mjs /assets/nginx.template.conf /nginx.conf && (php artisan schedule:work & php-fpm -y /app/php-fpm.conf & nginx -c /nginx.conf)'
